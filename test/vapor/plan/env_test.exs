@@ -1,7 +1,7 @@
-defmodule Vapor.Config.EnvTest do
+defmodule Vapor.Plan.EnvTest do
   use ExUnit.Case, async: false
 
-  alias Vapor.Config.Env
+  alias Vapor.Plan.Env
 
   setup do
     System.delete_env("APP_FOO")

@@ -5,12 +5,26 @@ defmodule Vapor.Store do
     GenServer.start_link(__MODULE__, {module, plans}, name: module)
   end
 
-  def init({module, plans}) do
+  def set(address, key, value) when is_binary(key) do
+    GenServer.call(address, {:set, key, value})
+  end
+
+  def get(module, key, as: type) when is_binary(key) do
+    case :ets.lookup(module, key) do
+      [] ->
+        {:error, Vapor.NotFoundError}
+
+      [{^key, value}] ->
+        Vapor.Config.Converter.apply(value, type)
+    end
+  end
+
+  def init({module, plan}) do
     ^module = :ets.new(module, [:set, :protected, :named_table])
 
-    case load_config(module, plans) do
+    case load_config(module, plan) do
       :ok ->
-        {:ok, %{plans: plans, table: module}}
+        {:ok, %{plan: plan, table: module}}
 
       :error ->
         {:stop, :could_not_load_config}

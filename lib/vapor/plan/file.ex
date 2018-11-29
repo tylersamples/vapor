@@ -1,4 +1,4 @@
-defmodule Vapor.Config.File do
+defmodule Vapor.Plan.File do
   defstruct path: nil, format: nil
 
   def with_name(name) do

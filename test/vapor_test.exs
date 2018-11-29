@@ -2,7 +2,7 @@ defmodule VaporTest do
   use ExUnit.Case, async: false
   doctest Vapor
 
-  alias Vapor.Config
+  alias Vapor.Plan
 
   defmodule TestConfig do
     use Vapor.Config
@@ -14,7 +14,7 @@ defmodule VaporTest do
 
   describe "configuration" do
     test "can be overriden manually" do
-      config = Config.default()
+      config = Plan.default()
 
       TestConfig.start_link(config)
 
@@ -30,8 +30,8 @@ defmodule VaporTest do
 
     test "can pull in the environment" do
       config =
-        Config.default()
-        |> Config.merge(Config.Env.with_prefix("APP"))
+        Plan.default()
+        |> Plan.merge(Plan.Env.with_prefix("APP"))
 
       System.put_env("APP_FOO", "foo")
       System.put_env("APP_BAR", "bar")
@@ -44,9 +44,9 @@ defmodule VaporTest do
 
     test "can be stacked" do
       config =
-        Config.default()
-        |> Config.merge(Config.Env.with_prefix("APP"))
-        |> Config.merge(Config.File.with_name("test/support/settings.json"))
+        Plan.default()
+        |> Plan.merge(Plan.Env.with_prefix("APP"))
+        |> Plan.merge(Plan.File.with_name("test/support/settings.json"))
 
       System.put_env("APP_FOO", "env foo")
       System.put_env("APP_BAR", "env bar")
@@ -60,9 +60,9 @@ defmodule VaporTest do
 
     test "manual config always takes precedence" do
       config =
-        Config.default()
-        |> Config.merge(Config.Env.with_prefix("APP"))
-        |> Config.merge(Config.File.with_name("test/support/settings.json"))
+        Plan.default()
+        |> Plan.merge(Plan.Env.with_prefix("APP"))
+        |> Plan.merge(Plan.File.with_name("test/support/settings.json"))
 
       System.put_env("APP_FOO", "env foo")
       System.put_env("APP_BAR", "env bar")

@@ -17,17 +17,11 @@ defmodule Vapor.Config do
       end
 
       def set(key, value) when is_binary(key) do
-        GenServer.call(__MODULE__, {:set, key, value})
+        Vapor.Store.set(__MODULE__, key, value)
       end
 
       def get(key, as: type) when is_binary(key) do
-        case :ets.lookup(__MODULE__, key) do
-          [] ->
-            {:error, Vapor.NotFoundError}
-
-          [{^key, value}] ->
-            Vapor.Config.Converter.apply(value, type)
-        end
+        Vapor.Store.get(__MODULE__, key, as: type)
       end
 
       def get!(key, as: type) when is_binary(key) do
@@ -44,9 +38,9 @@ defmodule Vapor.Config do
 
   defmodule Converter do
     @moduledoc """
-               Applies conversions to values. This module is intended to be hidden from
-               the end user.
-               """ && false
+    Applies conversions to values. This module is intended to be hidden from
+    the end user.
+    """ && false
 
     def apply(value, type) when is_atom(type) do
       case type do
@@ -97,20 +91,5 @@ defmodule Vapor.Config do
     defp to_bool("true"), do: {:ok, true}
     defp to_bool("false"), do: {:ok, false}
     defp to_bool(_), do: {:error, Vapor.ConversionError}
-  end
-
-  @doc """
-  Creates an initial configuration.
-  """
-  def default do
-    []
-  end
-
-  @doc """
-  Merges an existing configuration plan with a new configuration plan.
-  Plans are stacked and applied in the order that they are merged.
-  """
-  def merge(existing_plan, plan) do
-    existing_plan ++ [plan]
   end
 end
