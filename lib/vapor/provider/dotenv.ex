@@ -39,7 +39,7 @@ defmodule Vapor.Provider.Dotenv do
     defp parse(contents) do
       contents
       |> String.split(~r/\n/, trim: true)
-      |> Enum.map(fn pair -> String.split(pair, "=") end)
+      |> Enum.map(fn pair -> String.split(pair, "=", parts: 2) end)
       |> Enum.filter(&good_pair/1)
       |> Enum.map(fn [key, value] -> {String.trim(key), String.trim(value)} end)
       |> Enum.map(fn {key, value} -> {normalize(key), value} end)
